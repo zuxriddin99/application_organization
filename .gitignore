@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+*.log
+
+db.sqlite3
+media/
+venv/
+.env
+.env.prod
+.env.db
+.ruff_cache
+db.sqlite3
+.idea/
+env/env.prod
+env/env.db
