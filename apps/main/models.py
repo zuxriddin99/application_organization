@@ -19,7 +19,6 @@ class Document(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
 
-
     def __str__(self):
         return self.name
 
@@ -33,7 +32,6 @@ class News(models.Model):
     description = models.TextField(verbose_name='Описание')
     image = models.ImageField(upload_to='news/', verbose_name='Изображение')
 
-
     def __str__(self):
         return self.name
 
@@ -41,3 +39,16 @@ class News(models.Model):
         verbose_name = 'Новость'
         verbose_name_plural = "Новости"
 
+
+class Client(models.Model):
+    telegram_user_id = models.IntegerField(unique=True)
+    phone_number = models.CharField(max_length=20, blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
+
+    def __str__(self):
+        return str(self.telegram_user_id)
+
+    class Meta:
+        verbose_name = 'Клиент'
+        verbose_name_plural = "Клиенты"

@@ -7,3 +7,4 @@ storage = MemoryStorage()
 
 dp = Dispatcher(bot, storage=storage)
 from apps.bot.handlers.start_handlers import *  # noqa
+from apps.bot.handlers.main_handlers import *  # noqa
