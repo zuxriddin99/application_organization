@@ -42,17 +42,21 @@ async def back_to_category_list(message: types.Message):
 @dp.message_handler()
 async def documents_list(message: types.Message):
     if message.text == b_t.BEST_TEAMMATE:
-        pass
-
-    if message.text == b_t.NEWS:
+        employer = await main_models.Employer.objects.afirst()
+        file = await read_file(employer.image.path)
+        await message.answer_photo(photo=file, caption=employer.initials, parse_mode=ParseMode.HTML)
+    elif message.text == b_t.NEWS:
+        have_news = False
         async for news in main_models.News.objects.all():
+            have_news = True
             html_message = f'<b>{news.name}</b>\n{news.description}'
             if news.image:
                 file = await read_file(news.image.path)
                 await message.answer_photo(photo=file, caption=html_message, parse_mode=ParseMode.HTML)
             else:
                 await message.answer(text=html_message, parse_mode=ParseMode.HTML)
-
+        if not have_news:
+            await message.answer(text="no news", parse_mode=ParseMode.HTML)
     elif message.text in await get_all_categories_list():
         """ return documents selected category"""
         await message.answer(
