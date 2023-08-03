@@ -31,7 +31,9 @@ class Document(models.Model):
 class News(models.Model):
     name = models.CharField(max_length=255, verbose_name='Название новости')
     description = models.TextField(verbose_name='Описание')
-    image = models.ImageField(upload_to='news/', verbose_name='Изображение')
+    image = models.ImageField(upload_to='news/', verbose_name='Изображение', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
 
     def __str__(self):
         return self.name

@@ -1,5 +1,8 @@
+from aiogram.types import ParseMode
 from django.db.models import Q
+import asyncio
 
+from apps.bot.config import bot
 from apps.main import models as main_models
 from asgiref.sync import sync_to_async
 from typing import List
@@ -44,3 +47,29 @@ def return_document(name: str) -> main_models.Document:
     """
     document = main_models.Document.objects.aget(name=name)
     return document
+
+
+def send_news_async_to_sync(clients_id_list: List, news: main_models.News):
+    # Call the async function from synchronous code using asyncio.run()
+    asyncio.run(send_message_to_user(clients_id_list, news))
+
+
+async def send_message_to_user(clients_id_list: List, news: main_models.News):
+    html_message = f'<b>{news.name}</b>\n{news.description}'
+    if news.image:
+        file = await read_file(news.image.path)
+        for client_id in clients_id_list:
+            await bot.send_photo(chat_id=client_id, photo=file, caption=html_message, parse_mode=ParseMode.HTML)
+    else:
+        for client_id in clients_id_list:
+            await bot.send_message(chat_id=client_id, caption=html_message, parse_mode=ParseMode.HTML)
+
+
+async def read_file(filename):
+    try:
+        loop = asyncio.get_event_loop()
+        with open(filename, 'rb') as file:
+            content = await loop.run_in_executor(None, file.read)
+            return content
+    except FileNotFoundError:
+        return None
