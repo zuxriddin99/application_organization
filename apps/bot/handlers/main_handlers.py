@@ -2,11 +2,11 @@ import asyncio
 from random import randint
 from typing import List
 
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, ParseMode
 from asgiref.sync import sync_to_async
 
 from apps.bot.config import bot
-from apps.bot.utils import get_all_categories_list, get_documents_list, return_document
+from apps.bot.utils import get_all_categories_list, get_documents_list, return_document, read_file
 from apps.main import models as main_models
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -41,22 +41,29 @@ async def back_to_category_list(message: types.Message):
 
 @dp.message_handler()
 async def documents_list(message: types.Message):
-    """
-    return documents selected category
-    """
-    if message.text in await get_all_categories_list():
+    if message.text == b_t.BEST_TEAMMATE:
+        pass
+
+    if message.text == b_t.NEWS:
+        async for news in main_models.News.objects.all():
+            html_message = f'<b>{news.name}</b>\n{news.description}'
+            if news.image:
+                file = await read_file(news.image.path)
+                await message.answer_photo(photo=file, caption=html_message, parse_mode=ParseMode.HTML)
+            else:
+                await message.answer(text=html_message, parse_mode=ParseMode.HTML)
+
+    elif message.text in await get_all_categories_list():
+        """ return documents selected category"""
         await message.answer(
             message.text,
             reply_markup=await b.get_document_list_button(message.text)
         )
+
+
     elif message.text in await get_documents_list(''):
-        # doc = return_document(message.text)
+        """ return selected document"""
         doc: main_models.Document = await main_models.Document.objects.aget(name=message.text)
         with open(doc.file.path, 'rb') as file:
             # Use `send_document()` to send the file to the user
             await bot.send_document(message.chat.id, file)
-        # await message.reply_document(doc.file.read, reply_markup=await b.get_categories_list_button())
-        # await message.answer(
-        #     message.text,
-        #     reply_markup=await b.get_categories_list_button()
-        # )
