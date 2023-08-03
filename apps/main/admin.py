@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Document, News, Client
+from .models import Category, Document, News, Client, Employer
 
 
 class DocumentInlineAdmin(admin.TabularInline):
@@ -23,3 +23,6 @@ class ClientAdmin(admin.ModelAdmin):
 @admin.register(News)
 class NewsAdmin(admin.ModelAdmin):
     list_display = ['name', 'created_at']
+
+
+admin.site.register(Employer)
