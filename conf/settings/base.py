@@ -33,6 +33,7 @@ LIBS = [
 ]
 APPS = [
     'apps.main',
+    'apps.bot.apps.BotConfig',
 ]
 
 INSTALLED_APPS = [

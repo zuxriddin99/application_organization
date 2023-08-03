@@ -7,3 +7,5 @@ Pillow==10.0.0
 psycopg2-binary==2.9.6
 sqlparse==0.4.4
 tzdata==2023.3
+
+aiogram~=2.25.1
