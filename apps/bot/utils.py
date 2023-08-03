@@ -49,12 +49,7 @@ def return_document(name: str) -> main_models.Document:
     return document
 
 
-def send_news_async_to_sync(clients_id_list: List, news: main_models.News):
-    # Call the async function from synchronous code using asyncio.run()
-    asyncio.run(send_message_to_user(clients_id_list, news))
-
-
-async def send_message_to_user(clients_id_list: List, news: main_models.News):
+async def send_message_to_users(clients_id_list: List, news: main_models.News):
     html_message = f'<b>{news.name}</b>\n{news.description}'
     if news.image:
         file = await read_file(news.image.path)
