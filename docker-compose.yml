@@ -1,0 +1,60 @@
+version: '3.3'
+
+services:
+
+  django:
+    container_name: django
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: gunicorn conf.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/usr/src/application_organization/static
+      - media_volume:/usr/src/application_organization/media
+    ports:
+      - "8000:8000"
+    env_file:
+      - env/.env.prod
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: postgres_v3
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - env/.env.db
+
+#  nginx:
+#    image: nginx
+#    container_name: nginx_v3
+#    ports:
+#      - "8000:8000"
+#    #      - "444:444"
+#    restart: always
+#    volumes:
+#      - static_volume:/usr/src/application_organization/static
+#      - media_volume:/usr/src/application_organization/media
+#    depends_on:
+#      - django
+
+  bot:
+    container_name: bot
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - 8000
+    env_file:
+      - env/.env.prod
+    depends_on:
+      - postgres
+    command: python manage.py run_bot
+    restart: always
+
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
