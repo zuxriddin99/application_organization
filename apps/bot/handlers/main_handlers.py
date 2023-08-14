@@ -6,7 +6,7 @@ from aiogram.types import CallbackQuery, ParseMode
 from asgiref.sync import sync_to_async
 
 from apps.bot.config import bot
-from apps.bot.utils import get_all_categories_list, get_documents_list, return_document, read_file
+from apps.bot.utils import get_all_categories_list, get_documents_list, return_document, read_file, check_permissions
 from apps.main import models as main_models
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -17,6 +17,7 @@ from apps.bot import button_text as b_t
 
 
 @dp.message_handler(lambda message: message.text == b_t.INFO)
+@check_permissions()
 async def info_about_bot(message: types.Message):
     """
     return info about bot
@@ -29,6 +30,7 @@ async def info_about_bot(message: types.Message):
 
 
 @dp.message_handler(lambda message: message.text == b_t.BACK)
+@check_permissions()
 async def back_to_category_list(message: types.Message):
     """
     return info about bot
@@ -40,6 +42,7 @@ async def back_to_category_list(message: types.Message):
 
 
 @dp.message_handler()
+@check_permissions()
 async def documents_list(message: types.Message):
     if message.text == b_t.BEST_TEAMMATE:
         employer = await main_models.Employer.objects.afirst()
@@ -68,6 +71,8 @@ async def documents_list(message: types.Message):
     elif message.text in await get_documents_list(''):
         """ return selected document"""
         doc: main_models.Document = await main_models.Document.objects.aget(name=message.text)
+        if doc.response_msg:
+            await message.answer(doc.response_msg)
         with open(doc.file.path, 'rb') as file:
             # Use `send_document()` to send the file to the user
             await bot.send_document(message.chat.id, file)

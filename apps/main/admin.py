@@ -1,11 +1,19 @@
 from django.contrib import admin
 
-from .models import Category, Document, News, Client, Employer
+from .models import Category, Document, News, Client, Employer, SickLeave
+from django.forms import TextInput, Textarea
+from django.db import models
 
 
 class DocumentInlineAdmin(admin.TabularInline):
     model = Document
     extra = 1
+
+
+class SickLeaveInlineAdmin(admin.TabularInline):
+    model = SickLeave
+    extra = 1
+    fields = ['data']
 
 
 @admin.register(Category)
@@ -30,7 +38,8 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ['telegram_user_id', 'phone_number', 'created_at']
+    list_display = ['telegram_user_id', 'full_name', 'created_at']
+    inlines = [SickLeaveInlineAdmin]
 
 
 @admin.register(News)

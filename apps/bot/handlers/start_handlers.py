@@ -1,4 +1,6 @@
 import asyncio
+
+from apps.bot.utils import check_permissions
 from apps.main import models as main_models
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -7,6 +9,7 @@ from apps.bot import buttons as b
 from apps.bot.constants import SLEEP_TIME
 from apps.bot.dispatcher import dp
 from apps.bot import button_text as b_t
+from aiogram.dispatcher.filters import Text
 
 
 @dp.message_handler(lambda x: x.chat.type == 'private', commands=['start', 'help'])
@@ -21,26 +24,25 @@ async def send_welcome(message: types.Message):
 
 
 @dp.message_handler(lambda message: message.text == b_t.START)
-async def ask_phone_number_welcome(message: types.Message):
+async def ask_full_name_welcome(message: types.Message):
     """
     This handler will be called when user sends Начать
     """
-    await message.answer(
-        f'{message.from_user.full_name} Please enter your phone number before use',
-        reply_markup=b.ask_phone_b
-    )
+    await message.answer('Пожалуйста, введите свое ФИО перед использованием.\n')
+    await message.answer('Пример 👇 ')
+    await message.answer('ФИО:Мельникова Ксения Витальевна')
 
 
-@dp.message_handler(content_types=types.ContentType.CONTACT)
-async def get_phone_number(message: types.Message):
-    """
-    Get user phone number and create user in our system
-    """
-    data = message.contact
-    client, _ = await main_models.Client.objects.aget_or_create(telegram_user_id=data.user_id,
-                                                                phone_number=data.phone_number)
+
+@dp.message_handler(Text(startswith='ФИО:'))
+async def handler_full_name(message: types.Message):
+    full_name = message.text.replace('ФИО:', '')
+    data = message.from_user
+    client, _ = await main_models.Client.objects.aget_or_create(telegram_user_id=data.id,
+                                                                defaults={'full_name': full_name,
+                                                                          'telegram_user_name': data.full_name})
     await message.answer(
-        f'{message.from_user.full_name}, Чем я могу вам помочь?', reply_markup=await b.get_categories_list_button()
+        f'{full_name}, Чем я могу вам помочь?', reply_markup=await b.get_categories_list_button()
     )
 
 

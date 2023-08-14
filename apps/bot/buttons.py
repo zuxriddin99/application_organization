@@ -36,3 +36,8 @@ async def get_document_list_button(category_name: str) -> ReplyKeyboardMarkup():
         documents_list.add(KeyboardButton(doc_name))
     documents_list.add(button_info)
     return documents_list
+
+
+async def get_empty_list_button() -> ReplyKeyboardMarkup():
+    empty_list = ReplyKeyboardMarkup(resize_keyboard=True)
+    return empty_list

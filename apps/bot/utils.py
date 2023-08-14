@@ -1,6 +1,7 @@
-from aiogram.types import ParseMode
+from aiogram.types import ParseMode, ReplyKeyboardMarkup
 from django.db.models import Q
 import asyncio
+from aiogram import types
 
 from apps.bot.config import bot
 from apps.main import models as main_models
@@ -68,3 +69,21 @@ async def read_file(filename):
             return content
     except FileNotFoundError:
         return None
+
+
+def check_permissions():
+    def decorator(handler):
+        async def wrapped(message: types.Message):
+            try:
+                await main_models.Client.objects.aget(telegram_user_id=message.from_user.id)
+                await handler(message)
+            except main_models.Client.DoesNotExist:
+                empty_list = ReplyKeyboardMarkup(resize_keyboard=True)
+                await message.reply("Перед использованием этой команды необходимо ввести ваше ФИО",
+                                    reply_markup=empty_list)
+                await message.answer('Пример 👇 ')
+                await message.answer('ФИО:Мельникова Ксения Витальевна', reply_markup=None)
+
+        return wrapped
+
+    return decorator
