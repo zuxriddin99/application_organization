@@ -12,8 +12,14 @@ class DocumentInlineAdmin(admin.TabularInline):
 
 class SickLeaveInlineAdmin(admin.TabularInline):
     model = SickLeave
-    extra = 1
-    fields = ['data']
+    extra = 0
+    fields = ['date', 'created_at']
+
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            return self.readonly_fields
+        else:
+            return ['date', 'created_at']
 
 
 @admin.register(Category)
