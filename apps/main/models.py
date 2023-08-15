@@ -62,12 +62,12 @@ class Client(models.Model):
 
 class SickLeave(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    data = models.CharField('даты больничного', blank=True, default='')
+    date = models.CharField('Дата больничного', blank=True, default='')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
 
     def __str__(self):
-        return str(self.data)
+        return str(self.date)
 
     class Meta:
         verbose_name = 'Больничный'

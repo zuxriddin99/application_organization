@@ -67,7 +67,7 @@ async def documents_list(message: types.Message):
         client = await main_models.Client.objects.aget(telegram_user_id=message.from_user.id)
         date_str = message.text
         date = datetime.datetime.strptime(date_str, "%d/%m/%Y").date()
-        main_models.SickLeave.objects.acreate(client=client, date=date)
+        await main_models.SickLeave.objects.acreate(client=client, date=date)
         await message.answer("Ваша дата отправил администратору")
     elif message.text in await get_all_categories_list():
         """ return documents selected category"""
