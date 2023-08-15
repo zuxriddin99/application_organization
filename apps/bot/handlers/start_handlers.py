@@ -18,7 +18,7 @@ async def send_welcome(message: types.Message):
     This handler will be called when user sends `/start` or `/help` command
     """
     await message.answer(
-        f'Здравствуйте {message.from_user.full_name}! Я бот компании Zood. Нажмите на кнопку начать, для того что бы ознокомиться с моими возможностями 👇',
+        f'Здравствуйте {message.from_user.full_name}! Я бот компании Zood. Нажмите на кнопку начать, чтобы ознакомиться с моими возможностями 👇',
         reply_markup=b.first_b
     )
 

@@ -44,7 +44,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ['telegram_user_id', 'full_name', 'created_at']
+    list_display = ['telegram_user_id', 'full_name', 'created_at', 'holiday_quantity']
     inlines = [SickLeaveInlineAdmin]
 
 
