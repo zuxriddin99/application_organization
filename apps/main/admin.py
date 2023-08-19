@@ -39,12 +39,8 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ['telegram_user_id', 'full_name', 'created_at', 'holiday_quantity', 'is_approved']
+    list_display = ['telegram_user_id', 'full_name', 'created_at', 'holiday_quantity']
     inlines = [SickLeaveInlineAdmin]
-    save_on_top = True
-    save_as = True
-    list_editable = ('is_approved',)
-    search_fields = ('full_name', 'telegram_user_name',)
 
 
 @admin.register(News)
