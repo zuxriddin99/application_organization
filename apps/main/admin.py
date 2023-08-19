@@ -50,8 +50,9 @@ class ClientAdmin(admin.ModelAdmin):
     inlines = [SickLeaveInlineAdmin]
     save_on_top = True
     save_as = True
-    list_editable = ('is_approved',)
-    search_fields = ('full_name', 'telegram_user_name',)
+    list_editable = ('is_approved', 'holiday_quantity')
+    search_fields = ('full_name', 'telegram_user_name', 'telegram_user_id')
+
 
 @admin.register(News)
 class NewsAdmin(admin.ModelAdmin):
