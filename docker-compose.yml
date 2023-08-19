@@ -11,8 +11,10 @@ services:
     volumes:
       - static_volume:/usr/src/application_organization/static
       - media_volume:/usr/src/application_organization/media
-    ports:
-      - "8000:8000"
+#    ports:
+#      - "8000:8000"
+    expose:
+      - 8000
     env_file:
       - env/.env.prod
     depends_on:
@@ -28,7 +30,7 @@ services:
 
   nginx:
     image: nginx
-    container_name: nginx_v3
+    container_name: nginx
     ports:
       - "8000:8000"
     #      - "444:444"
