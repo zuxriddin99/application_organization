@@ -89,7 +89,7 @@ async def documents_list(message: types.Message):
             # with open(doc.file.path, 'rb') as file:
             # Use `send_document()` to send the file to the user
             file_url = f'http://212.109.220.43{doc.file.url}'
-            await message.answer(file_url)
+            # await message.answer(file_url)
             await bot.send_document(message.chat.id, file_url)
         if message.text == b_t.SICK_LEAVE:
             today = datetime.date.today()
