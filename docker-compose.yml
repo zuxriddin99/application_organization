@@ -32,7 +32,7 @@ services:
     image: nginx
     container_name: nginx
     ports:
-      - "8001:8000"
+      - "80:8000"
     #      - "444:444"
     restart: always
     volumes:
