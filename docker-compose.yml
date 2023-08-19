@@ -32,8 +32,7 @@ services:
     image: nginx
     container_name: nginx
     ports:
-      - "8000:8000"
-    #      - "444:444"
+      - "80:8000"
     restart: always
     volumes:
       - static_volume:/usr/src/application_organization/static
