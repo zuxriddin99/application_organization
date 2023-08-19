@@ -26,18 +26,18 @@ services:
     env_file:
       - env/.env.db
 
-#  nginx:
-#    image: nginx
-#    container_name: nginx_v3
-#    ports:
-#      - "8000:8000"
-#    #      - "444:444"
-#    restart: always
-#    volumes:
-#      - static_volume:/usr/src/application_organization/static
-#      - media_volume:/usr/src/application_organization/media
-#    depends_on:
-#      - django
+  nginx:
+    image: nginx
+    container_name: nginx_v3
+    ports:
+      - "8000:8000"
+    #      - "444:444"
+    restart: always
+    volumes:
+      - static_volume:/usr/src/application_organization/static
+      - media_volume:/usr/src/application_organization/media
+    depends_on:
+      - django
 
   bot:
     container_name: bot
