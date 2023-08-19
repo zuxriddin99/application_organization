@@ -37,10 +37,19 @@ class CategoryAdmin(admin.ModelAdmin):
             return ['name']
 
 
+# @admin.register(Client)
+# class ClientAdmin(admin.ModelAdmin):
+#     list_display = ['telegram_user_id', 'full_name', 'created_at', 'holiday_quantity']
+#     inlines = [SickLeaveInlineAdmin]
+#
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ['telegram_user_id', 'full_name', 'created_at', 'holiday_quantity']
+    list_display = ['telegram_user_id', 'full_name', 'created_at', 'holiday_quantity', 'is_approved']
     inlines = [SickLeaveInlineAdmin]
+    save_on_top = True
+    save_as = True
+    list_editable = ('is_approved',)
+    search_fields = ('full_name', 'telegram_user_name',)
 
 
 @admin.register(News)
