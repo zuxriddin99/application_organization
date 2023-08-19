@@ -1,5 +1,7 @@
 import asyncio
 
+from asgiref.sync import sync_to_async
+
 from apps.bot.utils import check_permissions
 from apps.main import models as main_models
 from aiogram import types
@@ -28,21 +30,34 @@ async def ask_full_name_welcome(message: types.Message):
     """
     This handler will be called when user sends Начать
     """
-    await message.answer('Пожалуйста, введите свое ФИО перед использованием.\n')
-    await message.answer('Пример 👇 ')
-    await message.answer('ФИО:Мельникова Ксения Витальевна')
-
+    try:
+        client = await main_models.Client.objects.aget(telegram_user_id=message.from_user.id)
+        await message.answer('Ваша информация отправлена администратору, подождите')
+        await message.answer('Если вы хотите изменить FIO, вы можете повторно отправить')
+        await message.answer('Пример 👇 ')
+        await message.answer('ФИО:Мельникова Ксения Витальевна')
+    except main_models.Client.DoesNotExist:
+        await message.answer('Пожалуйста, введите свое ФИО перед использованием.\n')
+        await message.answer('Пример 👇 ')
+        await message.answer('ФИО:Мельникова Ксения Витальевна')
 
 
 @dp.message_handler(Text(startswith='ФИО:'))
 async def handler_full_name(message: types.Message):
     full_name = message.text.replace('ФИО:', '')
     data = message.from_user
-    client, _ = await main_models.Client.objects.aget_or_create(telegram_user_id=data.id,
-                                                                defaults={'full_name': full_name,
-                                                                          'telegram_user_name': data.full_name})
+    client, created = await main_models.Client.objects.aget_or_create(telegram_user_id=data.id,
+                                                                      defaults={'full_name': full_name,
+                                                                                'telegram_user_name': data.full_name})
+    if not created and full_name != client.full_name:
+        async_update_client_full_name = sync_to_async(sync_update_client_full_name)
+        await async_update_client_full_name(client, full_name)
+
+    # await message.answer(
+    #     f'{full_name}, Чем я могу вам помочь?', reply_markup=await b.get_categories_list_button()
+    # )
     await message.answer(
-        f'{full_name}, Чем я могу вам помочь?', reply_markup=await b.get_categories_list_button()
+        "Администрация одобряет вас, после чего вы можете использовать бота"
     )
 
 
@@ -51,3 +66,8 @@ async def remove_old_messages(state: FSMContext):
         messages = data['messages']
         for mess in messages:
             await mess.delete()
+
+
+def sync_update_client_full_name(client, full_name):
+    client.full_name = full_name
+    client.save(update_fields=['full_name'])

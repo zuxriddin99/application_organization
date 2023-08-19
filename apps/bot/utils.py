@@ -1,3 +1,4 @@
+from aiogram.contrib.middlewares import logging
 from aiogram.types import ParseMode, ReplyKeyboardMarkup
 from django.db.models import Q
 import asyncio
@@ -80,7 +81,7 @@ def check_permissions():
                 if client.is_approved:
                     await handler(message)
                 else:
-                    await message.answer('Админстратор ещё не одобрил ваше заявку.', reply_markup=empty_list)
+                    await message.answer('Админстратор ещё не одобрил ваше заявку.', reply_markup=None)
             except main_models.Client.DoesNotExist:
                 await message.reply("Перед использованием этой команды необходимо ввести ваше ФИО",
                                     reply_markup=empty_list)
@@ -90,3 +91,10 @@ def check_permissions():
         return wrapped
 
     return decorator
+
+
+async def send_message(user_id, message_text, buttons):
+    try:
+        await bot.send_message(user_id, message_text, reply_markup=buttons)
+    except Exception as e:
+        pass

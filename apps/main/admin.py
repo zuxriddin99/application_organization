@@ -4,6 +4,8 @@ from .models import Category, Document, News, Client, Employer, SickLeave
 from django.forms import TextInput, Textarea
 from django.db import models
 
+from ..bot.config import bot
+
 
 class DocumentInlineAdmin(admin.TabularInline):
     model = Document
@@ -50,7 +52,6 @@ class ClientAdmin(admin.ModelAdmin):
     save_as = True
     list_editable = ('is_approved',)
     search_fields = ('full_name', 'telegram_user_name',)
-
 
 @admin.register(News)
 class NewsAdmin(admin.ModelAdmin):
