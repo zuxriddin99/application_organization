@@ -49,16 +49,19 @@ async def back_to_category_list(message: types.Message):
 async def documents_list(message: types.Message):
     if message.text == b_t.BEST_TEAMMATE:
         employer = await main_models.Employer.objects.afirst()
-        file = await read_file(employer.image.path)
-        await message.answer_photo(photo=file, caption=employer.initials, parse_mode=ParseMode.HTML)
+        # file = await read_file(employer.image.path)
+        file_url = f'http://212.109.220.43{employer.image.file.url}'
+        await message.answer_photo(photo=file_url, caption=employer.initials, parse_mode=ParseMode.HTML)
     elif message.text == b_t.NEWS:
         have_news = False
         async for news in main_models.News.objects.all():
             have_news = True
             html_message = f'<b>{news.name}</b>\n{news.description}'
             if news.image:
-                file = await read_file(news.image.path)
-                await message.answer_photo(photo=file, caption=html_message, parse_mode=ParseMode.HTML)
+                # file = await read_file(news.image.path)
+                file_url = f'http://212.109.220.43{news.image.file.url}'
+
+                await message.answer_photo(photo=file_url, caption=html_message, parse_mode=ParseMode.HTML)
             else:
                 await message.answer(text=html_message, parse_mode=ParseMode.HTML)
         if not have_news:
@@ -83,9 +86,10 @@ async def documents_list(message: types.Message):
         if doc.response_msg:
             await message.answer(doc.response_msg)
         if doc.file:
-            with open(doc.file.path, 'rb') as file:
-                # Use `send_document()` to send the file to the user
-                await bot.send_document(message.chat.id, file)
+            # with open(doc.file.path, 'rb') as file:
+            # Use `send_document()` to send the file to the user
+            file_url = f'http://212.109.220.43{doc.file.url}'
+            await bot.send_document(message.chat.id, file_url)
         if message.text == b_t.SICK_LEAVE:
             today = datetime.date.today()
             await message.answer("Отправить дату в этом формате(день/месяц/год)")
