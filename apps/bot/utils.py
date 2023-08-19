@@ -75,11 +75,8 @@ def check_permissions():
     def decorator(handler):
         async def wrapped(message: types.Message):
             try:
-                client = await main_models.Client.objects.aget(telegram_user_id=message.from_user.id)
-                if client.is_approved:
-                    await handler(message)
-                else:
-                    await message.answer('Админстратор ещё не одобрил ваше заявку.')
+                await main_models.Client.objects.aget(telegram_user_id=message.from_user.id)
+                await handler(message)
             except main_models.Client.DoesNotExist:
                 empty_list = ReplyKeyboardMarkup(resize_keyboard=True)
                 await message.reply("Перед использованием этой команды необходимо ввести ваше ФИО",
