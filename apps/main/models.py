@@ -52,6 +52,7 @@ class Client(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
     holiday_quantity = models.IntegerField(blank=True, null=True, verbose_name='Количество выходных')
+    is_approved = models.BooleanField(default=False, verbose_name='Одобренный')
 
     def __str__(self):
         return str(self.telegram_user_id)
