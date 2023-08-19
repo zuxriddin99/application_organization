@@ -8,9 +8,9 @@ services:
       context: .
       dockerfile: Dockerfile
     command: gunicorn conf.wsgi:application --bind 0.0.0.0:8000
-    volumes:
-      - static_volume:/usr/src/application_organization/static
-      - media_volume:/usr/src/application_organization/media
+#    volumes:
+#      - static_volume:/usr/src/application_organization/static
+#      - media_volume:/usr/src/application_organization/media
 #    ports:
 #      - "8000:8000"
     expose:
@@ -28,17 +28,17 @@ services:
     env_file:
       - env/.env.db
 
-  nginx:
-    image: nginx
-    container_name: nginx
-    ports:
-      - "80:8000"
-    restart: always
-    volumes:
-      - static_volume:/usr/src/application_organization/static
-      - media_volume:/usr/src/application_organization/media
-    depends_on:
-      - django
+#  nginx:
+#    image: nginx
+#    container_name: nginx
+#    ports:
+#      - "80:8000"
+#    restart: always
+#    volumes:
+#      - static_volume:/usr/src/application_organization/static
+#      - media_volume:/usr/src/application_organization/media
+#    depends_on:
+#      - django
 
   bot:
     container_name: bot
@@ -57,5 +57,5 @@ services:
 
 volumes:
   postgres_data:
-  static_volume:
-  media_volume:
+#  static_volume:
+#  media_volume:
