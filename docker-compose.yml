@@ -44,7 +44,8 @@ services:
     container_name: nginx
     build: ./nginx
     volumes:
-      - ./static:/static
+      - static_volume:/usr/src/application_organization/static
+      - media_volume:/usr/src/application_organization/media
     ports:
       - "80:80"
     depends_on:
