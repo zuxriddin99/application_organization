@@ -51,7 +51,8 @@ async def documents_list(message: types.Message):
         employer = await main_models.Employer.objects.afirst()
         file = await read_file(employer.image.path)
         # file_url = f'http://212.109.220.43{employer.image.file.url}'
-        await message.answer_photo(photo=file, caption=employer.initials, parse_mode=ParseMode.HTML)
+        await message.answer_photo(photo=types.InputFile(employer.image.path), caption=employer.initials,
+                                   parse_mode=ParseMode.HTML)
     elif message.text == b_t.NEWS:
         have_news = False
         async for news in main_models.News.objects.all():
@@ -61,7 +62,9 @@ async def documents_list(message: types.Message):
                 file = await read_file(news.image.path)
                 # file_url = f'http://212.109.220.43{news.image.file.url}'
 
-                await message.answer_photo(photo=file, caption=html_message, parse_mode=ParseMode.HTML)
+                # await message.answer_photo(photo=file, caption=html_message, parse_mode=ParseMode.HTML)
+                await message.answer_photo(photo=types.InputFile(news.image), caption=html_message,
+                                           parse_mode=ParseMode.HTML)
             else:
                 await message.answer(text=html_message, parse_mode=ParseMode.HTML)
         if not have_news:
