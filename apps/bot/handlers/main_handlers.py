@@ -50,11 +50,7 @@ async def back_to_category_list(message: types.Message):
 async def documents_list(message: types.Message):
     if message.text == b_t.BEST_TEAMMATE:
         employer: main_models.Employer = await main_models.Employer.objects.afirst()
-        # file = await read_file(employer.image)
-        # file_url = f'http://212.109.220.43{employer.image.file.url}'
-        file_stream = BytesIO(employer.image.read())
-        file_stream.seek(0)  # Move the stream cursor to the beginning
-        await message.answer_photo(photo=types.InputFile(file_stream, filename=employer.image.name), caption=employer.initials,
+        await message.answer_photo(photo=read_file_from_django(employer.image), caption=employer.initials,
                                    parse_mode=ParseMode.HTML)
     elif message.text == b_t.NEWS:
         have_news = False
@@ -62,14 +58,8 @@ async def documents_list(message: types.Message):
             have_news = True
             html_message = f'<b>{news.name}</b>\n{news.description}'
             if news.image:
-                # file = await read_file(news.image.path)
-                # file_url = f'http://212.109.220.43{news.image.file.url}'
-
-                file_stream = BytesIO(news.image.read())
-                file_stream.seek(0)  # Move the stream cursor to the beginning
-
-                # await message.answer_photo(photo=file, caption=html_message, parse_mode=ParseMode.HTML)
-                await message.answer_photo(photo=types.InputFile(file_stream, filename=news.image.name), caption=html_message,
+                await message.answer_photo(photo=read_file_from_django(news.image),
+                                           caption=html_message,
                                            parse_mode=ParseMode.HTML)
             else:
                 await message.answer(text=html_message, parse_mode=ParseMode.HTML)
@@ -95,12 +85,14 @@ async def documents_list(message: types.Message):
         if doc.response_msg:
             await message.answer(doc.response_msg)
         if doc.file:
-            with open(doc.file.path, 'rb') as file:
-                # Use `send_document()` to send the file to the user
-                # file_url = f'http://212.109.220.43{doc.file.url}'
-                # await message.answer(file_url)
-                await bot.send_document(message.chat.id, file)
+            await bot.send_document(message.chat.id, read_file_from_django(doc.file))
         if message.text == b_t.SICK_LEAVE:
             today = datetime.date.today()
             await message.answer("Отправить дату в этом формате(день/месяц/год)")
             await message.answer(f"{today.day}/{today.month}/{today.year}")
+
+
+def read_file_from_django(file):
+    file_stream = BytesIO(file.read())
+    file_stream.seek(0)  # Move the stream cursor to the beginning
+    return types.InputFile(file_stream, filename=file.name)
