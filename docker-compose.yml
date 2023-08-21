@@ -63,6 +63,9 @@ services:
     depends_on:
       - postgres
     command: python manage.py run_bot
+    volumes:
+      - static_volume:/usr/src/application_organization/static
+      - media_volume:/usr/src/application_organization/media
     restart: always
 
 
