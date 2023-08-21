@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import re
+from io import BytesIO
 from random import randint
 from typing import List
 
@@ -49,9 +50,11 @@ async def back_to_category_list(message: types.Message):
 async def documents_list(message: types.Message):
     if message.text == b_t.BEST_TEAMMATE:
         employer: main_models.Employer = await main_models.Employer.objects.afirst()
-        file = await read_file(employer.image)
+        # file = await read_file(employer.image)
         # file_url = f'http://212.109.220.43{employer.image.file.url}'
-        await message.answer_photo(photo=types.InputFile(employer.image.read), caption=employer.initials,
+        file_stream = BytesIO(employer.image.read())
+        file_stream.seek(0)  # Move the stream cursor to the beginning
+        await message.answer_photo(photo=types.InputFile(file_stream, filename=employer.image.name), caption=employer.initials,
                                    parse_mode=ParseMode.HTML)
     elif message.text == b_t.NEWS:
         have_news = False
@@ -59,11 +62,14 @@ async def documents_list(message: types.Message):
             have_news = True
             html_message = f'<b>{news.name}</b>\n{news.description}'
             if news.image:
-                file = await read_file(news.image.path)
+                # file = await read_file(news.image.path)
                 # file_url = f'http://212.109.220.43{news.image.file.url}'
 
+                file_stream = BytesIO(news.image.read())
+                file_stream.seek(0)  # Move the stream cursor to the beginning
+
                 # await message.answer_photo(photo=file, caption=html_message, parse_mode=ParseMode.HTML)
-                await message.answer_photo(photo=types.InputFile(news.image.file), caption=html_message,
+                await message.answer_photo(photo=types.InputFile(file_stream, filename=news.image.name), caption=html_message,
                                            parse_mode=ParseMode.HTML)
             else:
                 await message.answer(text=html_message, parse_mode=ParseMode.HTML)
