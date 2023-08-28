@@ -76,6 +76,22 @@ class SickLeave(models.Model):
         verbose_name_plural = "Больничный"
 
 
+class Holiday(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    date = models.CharField('Дата отпуск', blank=True, default='')
+    type_holiday = models.ForeignKey(Document, verbose_name='Тип отпуск', on_delete=models.PROTECT, blank=True,
+                                     null=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
+
+    def __str__(self):
+        return str(self.date)
+
+    class Meta:
+        verbose_name = 'Отпуск'
+        verbose_name_plural = "Отпуск"
+
+
 class SingletoneModel(models.Model):
     class Meta:
         abstract = True

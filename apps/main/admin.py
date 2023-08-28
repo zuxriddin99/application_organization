@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Document, News, Client, Employer, SickLeave
+from .models import Category, Document, News, Client, Employer, SickLeave, Holiday
 from django.forms import TextInput, Textarea
 from django.db import models
 
@@ -15,14 +15,21 @@ class DocumentInlineAdmin(admin.TabularInline):
 class SickLeaveInlineAdmin(admin.TabularInline):
     model = SickLeave
     extra = 0
-    fields = ['date', 'created_at']
-    readonly_fields = ['date', 'created_at']
+    fields = ['date', 'created_at', ]
+    readonly_fields = ['date', 'created_at', ]
+
+
+class HolidayInlineAdmin(admin.TabularInline):
+    model = Holiday
+    extra = 0
+    fields = ['type_holiday', 'date', 'created_at']
+    readonly_fields = ['date', 'created_at', 'type_holiday']
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name']
-    list_display_links = ['name']
+    list_display = ['id', 'name']
+    list_display_links = ['id', 'name']
     inlines = [DocumentInlineAdmin]
 
     def get_queryset(self, request):
@@ -47,7 +54,7 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
     list_display = ['telegram_user_id', 'full_name', 'created_at', 'holiday_quantity', 'is_approved']
-    inlines = [SickLeaveInlineAdmin]
+    inlines = [SickLeaveInlineAdmin, HolidayInlineAdmin]
     save_on_top = True
     save_as = True
     list_editable = ('is_approved', 'holiday_quantity')

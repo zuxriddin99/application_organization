@@ -1,4 +1,6 @@
 import asyncio
+from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from asgiref.sync import sync_to_async
 
@@ -14,6 +16,10 @@ from apps.bot import button_text as b_t
 from aiogram.dispatcher.filters import Text
 
 
+class OrderFullName(StatesGroup):
+    waiting_for_full_name = State()
+
+
 @dp.message_handler(lambda x: x.chat.type == 'private', commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     """
@@ -25,26 +31,30 @@ async def send_welcome(message: types.Message):
     )
 
 
-@dp.message_handler(lambda message: message.text == b_t.START)
-async def ask_full_name_welcome(message: types.Message):
+@dp.message_handler(lambda message: message.text == b_t.START, state="*")
+async def ask_full_name_welcome(message: types.Message, state: FSMContext):
     """
     This handler will be called when user sends Начать
     """
     try:
         client = await main_models.Client.objects.aget(telegram_user_id=message.from_user.id)
-        await message.answer('Ваша информация отправлена администратору, подождите')
-        await message.answer('Если вы хотите изменить FIO, вы можете повторно отправить')
-        await message.answer('Пример 👇 ')
-        await message.answer('ФИО:Мельникова Ксения Витальевна')
+        if client.is_approved:
+            await message.answer(
+                f'{message.from_user.full_name}, Чем я могу вам помочь?',
+                reply_markup=await b.get_categories_list_button()
+            )
+        else:
+            await message.answer('Ваша информация отправлена администратору, подождите',
+                                 reply_markup=types.ReplyKeyboardRemove)
+
     except main_models.Client.DoesNotExist:
-        await message.answer('Пожалуйста, введите свое ФИО перед использованием.\n')
-        await message.answer('Пример 👇 ')
-        await message.answer('ФИО:Мельникова Ксения Витальевна')
+        await message.answer('Пожалуйста, введите свое ФИО перед использованием.\n', reply_markup=types.ReplyKeyboardRemove)
+        await state.set_state(OrderFullName.waiting_for_full_name.state)
 
 
-@dp.message_handler(Text(startswith='ФИО:'))
-async def handler_full_name(message: types.Message):
-    full_name = message.text.replace('ФИО:', '')
+@dp.message_handler(state=OrderFullName.waiting_for_full_name)
+async def handler_full_name(message: types.Message, state: FSMContext):
+    full_name = message.text
     data = message.from_user
     client, created = await main_models.Client.objects.aget_or_create(telegram_user_id=data.id,
                                                                       defaults={'full_name': full_name,
@@ -59,6 +69,7 @@ async def handler_full_name(message: types.Message):
     await message.answer(
         "Администрация одобряет вас, после чего вы можете использовать бота"
     )
+    await state.finish()
 
 
 async def remove_old_messages(state: FSMContext):
