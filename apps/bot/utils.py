@@ -93,6 +93,24 @@ def check_permissions():
     return decorator
 
 
+async def check_permission_not_decorator(message: types.Message):
+    empty_list = ReplyKeyboardMarkup(resize_keyboard=True)
+    try:
+        client = await main_models.Client.objects.aget(telegram_user_id=message.from_user.id)
+        if client.is_approved:
+            return True
+        else:
+            await message.answer('Админстратор ещё не одобрил ваше заявку.', reply_markup=None)
+            return False
+
+    except main_models.Client.DoesNotExist:
+        await message.reply("Перед использованием этой команды необходимо ввести ваше ФИО",
+                            reply_markup=empty_list)
+        await message.answer('Пример 👇 ')
+        await message.answer('ФИО:Мельникова Ксения Витальевна', reply_markup=None)
+        return False
+
+
 async def send_message(user_id, message_text, buttons):
     try:
         await bot.send_message(user_id, message_text, reply_markup=buttons)

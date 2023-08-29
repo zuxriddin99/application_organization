@@ -45,10 +45,10 @@ async def ask_full_name_welcome(message: types.Message, state: FSMContext):
             )
         else:
             await message.answer('Ваша информация отправлена администратору, подождите',
-                                 reply_markup=types.ReplyKeyboardRemove)
+                                 )
 
     except main_models.Client.DoesNotExist:
-        await message.answer('Пожалуйста, введите свое ФИО перед использованием.\n', reply_markup=types.ReplyKeyboardRemove)
+        await message.answer('Пожалуйста, введите свое ФИО перед использованием.\n')
         await state.set_state(OrderFullName.waiting_for_full_name.state)
 
 
