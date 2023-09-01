@@ -23,22 +23,42 @@ def my_signal_receiver(sender, instance: News, created, **kwargs):
             send_message_to_users(list(Client.objects.all().values_list('telegram_user_id', flat=True)), instance))
 
 
-@receiver(post_save, sender=Client)
-def client_signal_receiver(sender, instance: Client, created, **kwargs):
-    if created:
-        pass
-    else:
-        if instance.is_approved:
-            asyncio.run(send_message(instance.telegram_user_id,
-                                     "Администратор одобрил ваш запрос, вы можете пользоваться услугами бота.",
-                                     b.get_categories_list_button_sync()))
-        else:
-            asyncio.run(send_message(instance.telegram_user_id,
-                                     "Ваш запрос был отправлен админстратору, ожидайте подтверждения запроса.",
-                                     None))
+# @receiver(post_save, sender=Client)
+# def client_signal_receiver(sender, instance: Client, created, **kwargs):
+#     if created:
+#         pass
+#     else:
+#         if instance.is_approved:
+#             asyncio.run(send_message(instance.telegram_user_id,
+#                                      "Администратор одобрил ваш запрос, вы можете пользоваться услугами бота.",
+#                                      b.get_categories_list_button_sync()))
+#         else:
+#             asyncio.run(send_message(instance.telegram_user_id,
+#                                      "Ваш запрос был отправлен админстратору, ожидайте подтверждения запроса.",
+#                                      None))
+
+@receiver(pre_save, sender=Client)
+def client_signal_receiver(sender, instance:Client, **kwargs):
+    # Get the old data from the database
+    try:
+        old_instance:Client = sender.objects.get(pk=instance.pk)
+    except sender.DoesNotExist:
+        old_instance = None
+
+    if old_instance:
+        # Access and compare old data with the new data
+        if instance.is_approved != old_instance.is_approved:
+            if instance.is_approved:
+                asyncio.run(send_message(instance.telegram_user_id,
+                                         "Администратор одобрил ваш запрос, вы можете пользоваться услугами бота.",
+                                         b.get_categories_list_button_sync()))
+            else:
+                asyncio.run(send_message(instance.telegram_user_id,
+                                         "Ваш запрос был отправлен админстратору, ожидайте подтверждения запроса.",
+                                         None))
 
 
 @receiver(pre_save, sender=Document)
 def doc_signal_receiver(sender, instance: Document, **kwargs):
-    if instance.id == 10:
+    if instance.id == 7:
         instance.name = SICK_LEAVE

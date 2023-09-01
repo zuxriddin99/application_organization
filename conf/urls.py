@@ -16,7 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.views.decorators.csrf import csrf_exempt
+
+from apps.main.views import webhook
 
 urlpatterns = [
+    path('webhook/', webhook, name='webhook'),
     path('', admin.site.urls),
 ]

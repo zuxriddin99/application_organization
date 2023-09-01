@@ -3,6 +3,7 @@ from aiogram.types import ParseMode, ReplyKeyboardMarkup
 from django.db.models import Q
 import asyncio
 from aiogram import types
+from django.utils import timezone
 
 from apps.bot.config import bot
 from apps.main import models as main_models
@@ -15,7 +16,49 @@ def get_all_categories_list() -> List[str]:
     """
     :return all categories name list
     """
-    categories = main_models.Category.objects.all().values_list('name', flat=True)
+    categories = main_models.Category.objects.filter(parent=None).values_list('name', flat=True)
+    for c in categories:
+        '''
+            timming loop. itself set a time by the time taken for iterate over the all Category.objects.all()
+        '''
+        pass
+    return list(categories)
+
+
+@sync_to_async
+def get_client_old_holidays(client_id: int):
+    holidays = main_models.Holiday.objects.filter(client_id=client_id, end_date__lte=timezone.now().date())
+    for c in holidays:
+        '''
+            timming loop. itself set a time by the time taken for iterate over the all Category.objects.all()
+        '''
+        pass
+    return holidays
+
+
+@sync_to_async
+def get_client_new_holidays(client_id: int):
+    holidays = main_models.Holiday.objects.filter(client_id=client_id, start_date__gte=timezone.now().date())
+    for c in holidays:
+        '''
+            timming loop. itself set a time by the time taken for iterate over the all Category.objects.all()
+        '''
+        pass
+    return holidays
+
+
+@sync_to_async
+def get_categories_list(name: str, is_main=True) -> List[str]:
+    """
+    :return categories name list
+    """
+    if name == '':
+        f = Q()
+    else:
+        f = Q(parent__name=name)
+    if is_main:
+        f = f & Q(parent=None)
+    categories = main_models.Category.objects.filter(f).values_list('name', flat=True)
     for c in categories:
         '''
             timming loop. itself set a time by the time taken for iterate over the all Category.objects.all()
@@ -113,6 +156,6 @@ async def check_permission_not_decorator(message: types.Message):
 
 async def send_message(user_id, message_text, buttons):
     try:
-        await bot.send_message(user_id, message_text, reply_markup=buttons)
+        await bot.send_message(user_id, message_text, reply_markup=buttons, parse_mode=ParseMode.HTML)
     except Exception as e:
         pass

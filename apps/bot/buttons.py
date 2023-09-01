@@ -2,7 +2,7 @@ from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
 from apps.bot import button_text as b_t
-from apps.bot.utils import get_all_categories_list, get_documents_list
+from apps.bot.utils import get_all_categories_list, get_documents_list, get_categories_list
 from apps.main.models import Category
 
 button_nachat = KeyboardButton(b_t.START)
@@ -45,10 +45,14 @@ def get_categories_list_button_sync() -> ReplyKeyboardMarkup():
 
 async def get_document_list_button(category_name: str) -> ReplyKeyboardMarkup():
     all_documents = await get_documents_list(category_name)
+    sub_categories = await get_categories_list(category_name, is_main=False)
     documents_list = ReplyKeyboardMarkup(resize_keyboard=True)
     button_info = KeyboardButton(b_t.BACK)
+    for sub_cat_name in sub_categories:
+        documents_list.add(KeyboardButton(sub_cat_name))
     for doc_name in all_documents:
         documents_list.add(KeyboardButton(doc_name))
+
     documents_list.add(button_info)
     return documents_list
 
@@ -56,3 +60,10 @@ async def get_document_list_button(category_name: str) -> ReplyKeyboardMarkup():
 async def get_empty_list_button() -> ReplyKeyboardMarkup():
     empty_list = ReplyKeyboardMarkup(resize_keyboard=True)
     return empty_list
+
+
+async def get_confirm_list_button(type_holiday: str) -> ReplyKeyboardMarkup():
+    confirm_button = InlineKeyboardButton(text="Подтверждаю", callback_data=f"confirm_b-{type_holiday}")
+    not_button = InlineKeyboardButton(
+        text="Нет, передумал", callback_data=f"no_b-{type_holiday}")
+    return InlineKeyboardMarkup().add(confirm_button, not_button)
