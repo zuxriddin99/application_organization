@@ -126,10 +126,8 @@ def check_permissions():
                 else:
                     await message.answer('Админстратор ещё не одобрил ваше заявку.', reply_markup=None)
             except main_models.Client.DoesNotExist:
-                await message.reply("Перед использованием этой команды необходимо ввести ваше ФИО",
+                await message.reply("Нажмите /start",
                                     reply_markup=empty_list)
-                await message.answer('Пример 👇 ')
-                await message.answer('ФИО:Мельникова Ксения Витальевна', reply_markup=None)
 
         return wrapped
 
@@ -147,10 +145,8 @@ async def check_permission_not_decorator(message: types.Message):
             return False
 
     except main_models.Client.DoesNotExist:
-        await message.reply("Перед использованием этой команды необходимо ввести ваше ФИО",
+        await message.reply("Нажмите /start",
                             reply_markup=empty_list)
-        await message.answer('Пример 👇 ')
-        await message.answer('ФИО:Мельникова Ксения Витальевна', reply_markup=None)
         return False
 
 
