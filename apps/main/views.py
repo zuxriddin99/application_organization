@@ -14,8 +14,7 @@ from apps.main.models import Holiday, Client
 # Create your views here.
 @csrf_exempt
 def webhook(reqeust):
-    Holiday.objects.all()
-    print(reqeust)
+    check_client_active_days()
     return JsonResponse({'success': True,
                          'message': 'Вся информация успешно сохранена. Вы можете распечатать чек и закрыть эту страницу.',
                          'data': 'data', 'redirect': False},
