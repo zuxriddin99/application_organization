@@ -137,7 +137,7 @@ async def handler_sick_leave_date(message: types.Message, state: FSMContext):
         start_date, end_date = datetime.datetime.strptime(date_str[0], "%d/%m/%Y").date(), datetime.datetime.strptime(
             date_str[1], "%d/%m/%Y").date()
         await main_models.SickLeave.objects.acreate(client=client, start_date=start_date, end_date=end_date)
-        await message.answer("Ваша дата отправил администратору")
+        await message.answer("Указанные вами даты отправлены администратору")
         await state.finish()
     except ValueError:
         await message.answer(
@@ -173,7 +173,7 @@ async def handler_holiday_date(message: types.Message, state: FSMContext):
             await main_models.Holiday.objects.acreate(client=client, start_date=start_date, end_date=end_date,
                                                       type_holiday=holiday_name)
 
-            await message.answer("Ваша дата отправил администратору")
+            await message.answer("Указанные вами даты отправлены администратору")
             await state.finish()
     except Exception as error:
         print(error, '-----------------------------------------')
@@ -197,7 +197,7 @@ async def check_button(call: types.CallbackQuery, state: FSMContext):
         await main_models.Holiday.objects.acreate(client=client, start_date=start_date, end_date=end_date,
                                                   type_holiday=holiday)
 
-        await call.message.answer("Ваша дата отправил администратору")
+        await call.message.answer("Указанные вами даты отправлены администратору")
         await state.finish()
     if confirm == "no_b":
         await call.message.answer("Хорошо")
