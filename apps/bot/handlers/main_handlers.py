@@ -7,7 +7,7 @@ from aiogram.types import CallbackQuery, ParseMode
 
 from apps.bot.config import bot
 from apps.bot.utils import get_all_categories_list, get_documents_list, return_document, read_file, check_permissions, \
-    check_permission_not_decorator, get_client_new_holidays, get_client_old_holidays
+    check_permission_not_decorator, get_client_new_holidays, get_client_old_holidays, get_all_categories_with_parent
 from apps.main import models as main_models
 from aiogram import types
 from django.core.exceptions import ValidationError
@@ -101,8 +101,9 @@ async def documents_list(message: types.Message, state: FSMContext):
                              "Пример: 20/8/2023 - 20/9/2023")
         await state.set_state(HolidayOrder.waiting_for_date.state)
         await state.update_data(type_holiday=b_t.ANNUAL_LEAVE)
-    elif message.text in await get_all_categories_list():
+    elif message.text in await get_all_categories_with_parent():
         """ return documents selected category"""
+        print(message.text, '-------------------------')
         await message.answer(
             message.text,
             reply_markup=await b.get_document_list_button(message.text)

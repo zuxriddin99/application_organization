@@ -44,12 +44,14 @@ def get_categories_list_button_sync() -> ReplyKeyboardMarkup():
 
 
 async def get_document_list_button(category_name: str) -> ReplyKeyboardMarkup():
+    print(category_name, '------------------------------------------------------------------------')
     all_documents = await get_documents_list(category_name)
     sub_categories = await get_categories_list(category_name, is_main=False)
     documents_list = ReplyKeyboardMarkup(resize_keyboard=True)
     button_info = KeyboardButton(b_t.BACK)
-    for sub_cat_name in sub_categories:
-        documents_list.add(KeyboardButton(sub_cat_name))
+    if sub_categories:
+        for sub_cat_name in sub_categories:
+            documents_list.add(KeyboardButton(sub_cat_name))
     for doc_name in all_documents:
         documents_list.add(KeyboardButton(doc_name))
 

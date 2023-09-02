@@ -26,6 +26,20 @@ def get_all_categories_list() -> List[str]:
 
 
 @sync_to_async
+def get_all_categories_with_parent() -> List[str]:
+    """
+    :return all categories name list
+    """
+    categories = main_models.Category.objects.all().values_list('name', flat=True)
+    for c in categories:
+        '''
+            timming loop. itself set a time by the time taken for iterate over the all Category.objects.all()
+        '''
+        pass
+    return list(categories)
+
+
+@sync_to_async
 def get_client_old_holidays(client_id: int):
     holidays = main_models.Holiday.objects.filter(client_id=client_id, end_date__lte=timezone.now().date())
     for c in holidays:
