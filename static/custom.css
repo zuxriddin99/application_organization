@@ -1,0 +1,29 @@
+.content-wrapper {
+    margin-left: 0px !important;
+}
+
+.transition {
+    margin-left: 5px !important;
+}
+
+.main-header {
+    margin-left: 0px !important;
+}
+
+.main-footer {
+    margin-left: 0px !important;
+}
+
+.dark-mode .select2-dropdown {
+    background-color: white;
+
+}
+
+.dark-mode select {
+    color: black;
+}
+
+.dark-mode .select2-dropdown .select2-search__field, .dark-mode .select2-search--inline .select2-search__field {
+    color: black;
+    background-color: white;
+}

@@ -7,7 +7,8 @@ from aiogram.types import CallbackQuery, ParseMode
 
 from apps.bot.config import bot
 from apps.bot.utils import get_all_categories_list, get_documents_list, return_document, read_file, check_permissions, \
-    check_permission_not_decorator, get_client_new_holidays, get_client_old_holidays, get_all_categories_with_parent
+    check_permission_not_decorator, get_client_new_holidays, get_client_old_holidays, get_all_categories_with_parent, \
+    generate_holiday_notification_for_admin
 from apps.main import models as main_models
 from aiogram import types
 from django.core.exceptions import ValidationError
@@ -170,8 +171,10 @@ async def handler_holiday_date(message: types.Message, state: FSMContext):
                                     reply_markup=await b.get_confirm_list_button(holiday_name))
 
                 return None
-            await main_models.Holiday.objects.acreate(client=client, start_date=start_date, end_date=end_date,
-                                                      type_holiday=holiday_name)
+            holiday_obj = await main_models.Holiday.objects.acreate(client=client, start_date=start_date,
+                                                                    end_date=end_date,
+                                                                    type_holiday=holiday_name)
+            await generate_holiday_notification_for_admin(holiday_obj)
 
             await message.answer("Указанные вами даты отправлены администратору")
             await state.finish()
@@ -194,9 +197,9 @@ async def check_button(call: types.CallbackQuery, state: FSMContext):
         #                                           type_holiday=holiday)
         start_date, end_date = datetime.datetime.strptime(start_date, "%d/%m/%Y").date(), datetime.datetime.strptime(
             end_date, "%d/%m/%Y").date()
-        await main_models.Holiday.objects.acreate(client=client, start_date=start_date, end_date=end_date,
-                                                  type_holiday=holiday)
-
+        holiday_obj = await main_models.Holiday.objects.acreate(client=client, start_date=start_date, end_date=end_date,
+                                                                type_holiday=holiday)
+        await generate_holiday_notification_for_admin(holiday_obj)
         await call.message.answer("Указанные вами даты отправлены администратору")
         await state.finish()
     if confirm == "no_b":

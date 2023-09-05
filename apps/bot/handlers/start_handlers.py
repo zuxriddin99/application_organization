@@ -4,7 +4,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from asgiref.sync import sync_to_async
 
-from apps.bot.utils import check_permissions
+from apps.bot.utils import check_permissions, generate_auth_notification_for_admin
 from apps.main import models as main_models
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -62,7 +62,7 @@ async def handler_full_name(message: types.Message, state: FSMContext):
     if not created and full_name != client.full_name:
         async_update_client_full_name = sync_to_async(sync_update_client_full_name)
         await async_update_client_full_name(client, full_name)
-
+    await generate_auth_notification_for_admin(client)
     # await message.answer(
     #     f'{full_name}, Чем я могу вам помочь?', reply_markup=await b.get_categories_list_button()
     # )

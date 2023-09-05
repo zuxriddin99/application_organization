@@ -119,14 +119,19 @@ class Holiday(models.Model):
         APPROVED = 'approved', "Одобренный"
         CANCELLED = 'cancelled', "Отменено"
 
+    class HolidayTypeEnum(models.TextChoices):
+        WAITING = 'Отпуск без содержания', 'Отпуск без содержания'
+        APPROVED = 'Отпуск по уходу за ребенком', "Отпуск по уходу за ребенком"
+        CANCELLED = 'Ежегодный отпуск', "Ежегодный отпуск"
+
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     start_date = models.DateField('Дата начала отпуска', blank=True, null=True)
     end_date = models.DateField('Дата окончания отпуска', blank=True, null=True)
     date = models.CharField('Дата отпуск', blank=True, default='')
-    type_holiday = models.CharField(verbose_name='Тип отпуск', blank=True, null=True)
+    type_holiday = models.CharField(verbose_name='Тип отпуск', choices=HolidayTypeEnum.choices, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
-    status = models.CharField('Тип паспорта', max_length=10, choices=HolidayStatusEnum.choices,
+    status = models.CharField('Статус', max_length=10, choices=HolidayStatusEnum.choices,
                               default=HolidayStatusEnum.WAITING)
 
     def __str__(self):
@@ -135,6 +140,7 @@ class Holiday(models.Model):
     class Meta:
         verbose_name = 'Отпуск'
         verbose_name_plural = "Отпуск"
+        ordering = ['-id']
 
 
 class SingletoneModel(models.Model):

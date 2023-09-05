@@ -69,7 +69,8 @@ class HolidayInlineAdmin(admin.TabularInline):
     extra = 0
 
     fields = ['type_holiday', 'start_date', 'end_date', 'status', 'created_at', 'msg']
-    readonly_fields = ['type_holiday', 'start_date', 'end_date', 'created_at']
+    # readonly_fields = ['type_holiday', 'start_date', 'end_date', 'created_at']
+    readonly_fields = ['created_at']
 
 
 @admin.register(Category)

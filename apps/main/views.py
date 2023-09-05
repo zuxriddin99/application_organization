@@ -9,6 +9,7 @@ import asyncio
 
 from apps.bot.utils import send_message
 from apps.main.models import Holiday, Client
+from conf.settings import DOMAIN
 
 
 # Create your views here.
@@ -33,18 +34,18 @@ def check_client_active_days():
     one_year_clients = Client.objects.filter(date_of_receipt=today - datetime.timedelta(days=365))
     for admin_id in admins_telegram_ids:
         for client in three_month_clients:
-            url = f"http://212.109.220.43/main/client/{client.id}/change/"
+            url = f"{DOMAIN}main/client/{client.id}/change/"
             text = f"<a href='{url}'>ФИО:{client.full_name_from_passport}.</a>\nПрошло 3 месяц"
             asyncio.run(send_message(admin_id, text, None))
         for client in six_month_clients:
-            url = f"http://212.109.220.43/main/client/{client.id}/change/"
+            url = f"{DOMAIN}main/client/{client.id}/change/"
             text = f"<a href='{url}'>ФИО:{client.full_name_from_passport}.</a>\nПрошло 6 месяц"
             asyncio.run(send_message(admin_id, text, None))
         for client in nine_month_clients:
-            url = f"http://212.109.220.43/main/client/{client.id}/change/"
+            url = f"{DOMAIN}main/client/{client.id}/change/"
             text = f"<a href='{url}'>ФИО:{client.full_name_from_passport}.</a>\nПрошло 9 месяц"
             asyncio.run(send_message(admin_id, text, None))
         for client in one_year_clients:
-            url = f"http://212.109.220.43/main/client/{client.id}/change/"
+            url = f"{DOMAIN}main/client/{client.id}/change/"
             text = f"<a href='{url}'>ФИО:{client.full_name_from_passport}.</a>\nПрошло 1 год"
             asyncio.run(send_message(admin_id, text, None))

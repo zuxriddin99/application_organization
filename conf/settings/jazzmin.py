@@ -15,7 +15,7 @@ JAZZMIN_SETTINGS = {
     "login_logo": None,
 
     # Logo to use for login form in dark themes (defaults to login_logo)
-    "login_logo_dark": True,
+    "login_logo_dark": False,
 
     # CSS classes that are applied to the logo above
     "site_logo_classes": "img-circle",
@@ -71,7 +71,7 @@ JAZZMIN_SETTINGS = {
     "show_sidebar": False,
 
     # Whether to aut expand the menu
-    "navigation_expanded": False,
+    "navigation_expanded": True,
 
     # Hide these apps when generating side menu e.g (auth)
     "hide_apps": [],
@@ -112,12 +112,12 @@ JAZZMIN_SETTINGS = {
     # UI Tweaks #
     #############
     # Relative paths to custom CSS/JS scripts (must be present in static files)
-    "custom_css": None,
+    "custom_css": 'custom.css',
     "custom_js": None,
     # Whether to link font from fonts.googleapis.com (use custom_css to supply font otherwise)
     "use_google_fonts_cdn": True,
     # Whether to show the UI customizer on the sidebar
-    "show_ui_builder": True,
+    "show_ui_builder": False,
 
     ###############
     # Change view #
@@ -141,14 +141,14 @@ JAZZMIN_UI_TWEAKS = {
     "brand_colour": False,
     "accent": "accent-success",
     "navbar": "navbar-dark",
-    "no_navbar_border": True,
+    "no_navbar_border": False,
     "navbar_fixed": False,
     "layout_boxed": False,
     "footer_fixed": True,
     "sidebar_fixed": False,
     "sidebar": "sidebar-dark-primary",
     "sidebar_nav_small_text": False,
-    "sidebar_disable_expand": False,
+    "sidebar_disable_expand": True,
     "sidebar_nav_child_indent": False,
     "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
@@ -163,5 +163,5 @@ JAZZMIN_UI_TWEAKS = {
         "danger": "btn-danger",
         "success": "btn-success"
     },
-    "actions_sticky_top": True
+    "actions_sticky_top": False
 }

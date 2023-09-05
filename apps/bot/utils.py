@@ -10,6 +10,22 @@ from apps.main import models as main_models
 from asgiref.sync import sync_to_async
 from typing import List
 
+from conf.settings import DOMAIN
+
+
+@sync_to_async
+def get_admins_list() -> List[str]:
+    """
+    :return all admins telegram id's list
+    """
+    admin_telegram_ids = main_models.Client.objects.filter(is_admin=True).values_list('telegram_user_id', flat=True)
+    for c in admin_telegram_ids:
+        '''
+            timming loop. itself set a time by the time taken for iterate over the all Client.objects.filter()
+        '''
+        pass
+    return list(admin_telegram_ids)
+
 
 @sync_to_async
 def get_all_categories_list() -> List[str]:
@@ -169,3 +185,25 @@ async def send_message(user_id, message_text, buttons):
         await bot.send_message(user_id, message_text, reply_markup=buttons, parse_mode=ParseMode.HTML)
     except Exception as e:
         pass
+
+
+async def send_notification_to_admin(text: str):
+    admins_telegram_ids = await get_admins_list()
+    for user_id in admins_telegram_ids:
+        await send_message(user_id, text, None)
+
+
+async def generate_holiday_notification_for_admin(holiday: main_models.Holiday):
+    url = f"{DOMAIN}main/client/{holiday.client.id}/change/#%D0%BE%D1%82%D0%BF%D1%83%D1%81%D0%BA-tab"
+    text = f"Уведомление\n" \
+           f"<a href='{url}'>ФИО:{holiday.client.full_name_from_passport}.</a>\n отправил заявление об отпуске.\n" \
+           f"Тип отпуск:{holiday.type_holiday}.\n" \
+           f"Дата начала {holiday.start_date}\n" \
+           f"Дата окончания: {holiday.end_date}"
+    await send_notification_to_admin(text)
+
+async def generate_auth_notification_for_admin(client:main_models.Client):
+    url = f"{DOMAIN}main/client/{client.id}/change/"
+    text = f"Уведомление\n" \
+           f"<a href='{url}'>ФИО:{client.full_name}.</a> отправил заявку на использование системы."
+    await send_notification_to_admin(text)
