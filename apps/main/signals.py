@@ -38,10 +38,10 @@ def my_signal_receiver(sender, instance: News, created, **kwargs):
 #                                      None))
 
 @receiver(pre_save, sender=Client)
-def client_signal_receiver(sender, instance:Client, **kwargs):
+def client_signal_receiver(sender, instance: Client, **kwargs):
     # Get the old data from the database
     try:
-        old_instance:Client = sender.objects.get(pk=instance.pk)
+        old_instance: Client = sender.objects.get(pk=instance.pk)
     except sender.DoesNotExist:
         old_instance = None
 
@@ -61,4 +61,5 @@ def client_signal_receiver(sender, instance:Client, **kwargs):
 @receiver(pre_save, sender=Document)
 def doc_signal_receiver(sender, instance: Document, **kwargs):
     if instance.id == 7:
-        instance.name = SICK_LEAVE
+        pass
+        # instance.name = SICK_LEAVE

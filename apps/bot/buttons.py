@@ -63,6 +63,13 @@ async def get_empty_list_button() -> ReplyKeyboardMarkup():
     empty_list = ReplyKeyboardMarkup(resize_keyboard=True)
     return empty_list
 
+async def get_cancel_button() -> ReplyKeyboardMarkup():
+    cancel_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+    button_cancel = KeyboardButton(b_t.CANCEL)
+    cancel_markup.add(button_cancel)
+
+    return cancel_markup
+
 
 async def get_confirm_list_button(type_holiday: str) -> ReplyKeyboardMarkup():
     confirm_button = InlineKeyboardButton(text="Подтверждаю", callback_data=f"confirm_b-{type_holiday}")

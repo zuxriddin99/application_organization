@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib import admin
 from django import forms  # Add this import
 import asyncio
@@ -30,7 +32,7 @@ class HolidayInlineForm(forms.ModelForm):
             asyncio.run(send_message(self.instance.client.telegram_user_id,
                                      msg,
                                      None))
-        if old_status != self.instance.status:
+        if old_status != self.instance.status and self.instance.start_date > datetime.date.today():
             asyncio.run(send_message(self.instance.client.telegram_user_id,
                                      f"Статус вашего запроса изменился на {status}",
                                      None))

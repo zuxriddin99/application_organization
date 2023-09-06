@@ -99,7 +99,7 @@ async def documents_list(message: types.Message, state: FSMContext):
     elif message.text in [b_t.TAKE_ANNUAL_LEAVE]:
         await message.answer("Отправьте дату начала отпуска и дату окончания.\n"
                              "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
-                             "Пример: 20/8/2023 - 20/9/2023")
+                             "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
         await state.set_state(HolidayOrder.waiting_for_date.state)
         await state.update_data(type_holiday=b_t.ANNUAL_LEAVE)
     elif message.text in await get_all_categories_with_parent():
@@ -120,12 +120,12 @@ async def documents_list(message: types.Message, state: FSMContext):
         if message.text == b_t.SICK_LEAVE:
             await message.answer("Отправьте дату начала больничный по болезни и дату окончания.\n"
                                  "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
-                                 "Пример: 20/8/2023 - 20/9/2023")
+                                 "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
             await state.set_state(SickLeaveOrder.waiting_for_date.state)
         elif message.text in [b_t.LEAVE_WITHOUT_PAY, b_t.HOLIDAY_CARE_FOR_CHILD]:
             await message.answer("Отправьте дату начала отпуска и дату окончания.\n"
                                  "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
-                                 "Пример: 20/8/2023 - 20/9/2023")
+                                 "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
             await state.set_state(HolidayOrder.waiting_for_date.state)
             await state.update_data(type_holiday=message.text)
 
@@ -144,14 +144,23 @@ async def handler_sick_leave_date(message: types.Message, state: FSMContext):
         await message.answer(
             "Отправьте дату начала больничный по болезни и дату окончания.\n"
             "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
-            "Пример: 20/8/2023 - 20/9/2023")
+            "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
         await state.set_state(SickLeaveOrder.waiting_for_date.state)
 
 
 @dp.message_handler(state=HolidayOrder.waiting_for_date)
 async def handler_holiday_date(message: types.Message, state: FSMContext):
-    try:
+    if message.text == b_t.CANCEL:
+        holiday = await state.get_data()
+        holiday_type = holiday['type_holiday']
+        if holiday_type == b_t.ANNUAL_LEAVE:
+            await message.answer('Отмена', reply_markup=await b.get_document_list_button(holiday_type))
+        else:
+            await message.answer('Отмена', reply_markup=await b.get_document_list_button(b_t.HOLIDAY))
+        await state.finish()
+        return
 
+    try:
         client = await main_models.Client.objects.aget(telegram_user_id=message.from_user.id)
         holiday_name = await state.get_data()
         holiday_name = holiday_name['type_holiday']
@@ -179,10 +188,9 @@ async def handler_holiday_date(message: types.Message, state: FSMContext):
             await message.answer("Указанные вами даты отправлены администратору")
             await state.finish()
     except Exception as error:
-        print(error, '-----------------------------------------')
         await message.answer("Отправьте дату начала отпуска и дату окончания.\n"
                              "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
-                             "Пример: 20/8/2023 - 20/9/2023")
+                             "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
         await state.set_state(HolidayOrder.waiting_for_date.state)
 
 
