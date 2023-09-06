@@ -147,7 +147,8 @@ async def handler_sick_leave_date(message: types.Message, state: FSMContext):
             date_str[1], "%d/%m/%Y").date()
         await main_models.SickLeave.objects.acreate(client=client, start_date=start_date, end_date=end_date,
                                                     type_sick=type_leave)
-        await message.answer("Указанные вами даты отправлены администратору", reply_markup=await b.get_document_list_button(b_t.SICK))
+        await message.answer("Указанные вами даты отправлены администратору",
+                             reply_markup=await b.get_document_list_button(b_t.SICK))
         await state.finish()
     except ValueError:
         await message.answer(
@@ -184,19 +185,18 @@ async def handler_holiday_date(message: types.Message, state: FSMContext):
             await state.set_state(HolidayOrder.waiting_for_date.state)
             return None
         else:
-            if holiday_name in [b_t.LEAVE_WITHOUT_PAY, b_t.HOLIDAY_CARE_FOR_CHILD]:
-                await state.finish()
-                await message.reply("Вы подтверждаете дату?",
-                                    reply_markup=await b.get_confirm_list_button(holiday_name))
-
-                return None
-            holiday_obj = await main_models.Holiday.objects.acreate(client=client, start_date=start_date,
-                                                                    end_date=end_date,
-                                                                    type_holiday=holiday_name)
-            await generate_holiday_notification_for_admin(holiday_obj)
-
-            await message.answer("Указанные вами даты отправлены администратору")
             await state.finish()
+            await message.reply("Вы подтверждаете дату?",
+                                reply_markup=await b.get_confirm_list_button(holiday_name))
+
+            return None
+            # holiday_obj = await main_models.Holiday.objects.acreate(client=client, start_date=start_date,
+            #                                                         end_date=end_date,
+            #                                                         type_holiday=holiday_name)
+            # await generate_holiday_notification_for_admin(holiday_obj)
+            #
+            # await message.answer("Указанные вами даты отправлены администратору")
+            # await state.finish()
     except Exception as error:
         await message.answer("Отправьте дату начала отпуска и дату окончания.\n"
                              "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
@@ -209,6 +209,10 @@ async def handler_holiday_date(message: types.Message, state: FSMContext):
 async def check_button(call: types.CallbackQuery, state: FSMContext):
     start_date, end_date = call.message.reply_to_message.text.replace(' ', '').split('-')
     confirm, holiday = call.data.split('-')[0], call.data.split('-')[-1]
+    if holiday == b_t.ANNUAL_LEAVE:
+        reply_markup = await b.get_document_list_button(holiday)
+    else:
+        reply_markup = await b.get_document_list_button(b_t.HOLIDAY)
     if confirm == "confirm_b":
         client = await main_models.Client.objects.aget(telegram_user_id=call.message.reply_to_message.from_user.id)
         # await main_models.Holiday.objects.acreate(client=client, start_date=start_date, end_date=end_date,
@@ -218,10 +222,11 @@ async def check_button(call: types.CallbackQuery, state: FSMContext):
         holiday_obj = await main_models.Holiday.objects.acreate(client=client, start_date=start_date, end_date=end_date,
                                                                 type_holiday=holiday)
         await generate_holiday_notification_for_admin(holiday_obj)
-        await call.message.answer("Указанные вами даты отправлены администратору")
+        await call.message.answer("Указанные вами даты отправлены администратору",
+                                  reply_markup=reply_markup)
         await state.finish()
     if confirm == "no_b":
-        await call.message.answer("Хорошо")
+        await call.message.answer("Хорошо", reply_markup=reply_markup)
     # Notify the Telegram server that the callback query is answered successfully
     await call.answer()
     await bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,
