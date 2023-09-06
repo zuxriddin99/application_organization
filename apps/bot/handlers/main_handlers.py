@@ -117,11 +117,13 @@ async def documents_list(message: types.Message, state: FSMContext):
             await message.answer(doc.response_msg)
         if doc.file:
             await bot.send_document(message.chat.id, read_file_from_django(doc.file))
-        if message.text == b_t.SICK_LEAVE:
+        if message.text in [b_t.SICK_LEAVE, b_t.PREGNANCY_LEAVE]:
             await message.answer("Отправьте дату начала больничный по болезни и дату окончания.\n"
                                  "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
                                  "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
             await state.set_state(SickLeaveOrder.waiting_for_date.state)
+            await state.update_data(type_leave=message.text)
+
         elif message.text in [b_t.LEAVE_WITHOUT_PAY, b_t.HOLIDAY_CARE_FOR_CHILD]:
             await message.answer("Отправьте дату начала отпуска и дату окончания.\n"
                                  "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
@@ -132,13 +134,20 @@ async def documents_list(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=SickLeaveOrder.waiting_for_date)
 async def handler_sick_leave_date(message: types.Message, state: FSMContext):
+    if message.text == b_t.CANCEL:
+        await message.answer('Отмена', reply_markup=await b.get_document_list_button(b_t.SICK))
+        await state.finish()
+        return
     try:
         client = await main_models.Client.objects.aget(telegram_user_id=message.from_user.id)
+        type_leave = await state.get_data()
+        type_leave = type_leave['type_leave']
         date_str = message.text.replace(' ', '').split('-')
         start_date, end_date = datetime.datetime.strptime(date_str[0], "%d/%m/%Y").date(), datetime.datetime.strptime(
             date_str[1], "%d/%m/%Y").date()
-        await main_models.SickLeave.objects.acreate(client=client, start_date=start_date, end_date=end_date)
-        await message.answer("Указанные вами даты отправлены администратору")
+        await main_models.SickLeave.objects.acreate(client=client, start_date=start_date, end_date=end_date,
+                                                    type_sick=type_leave)
+        await message.answer("Указанные вами даты отправлены администратору", reply_markup=await b.get_document_list_button(b_t.SICK))
         await state.finish()
     except ValueError:
         await message.answer(
@@ -154,9 +163,10 @@ async def handler_holiday_date(message: types.Message, state: FSMContext):
         holiday = await state.get_data()
         holiday_type = holiday['type_holiday']
         if holiday_type == b_t.ANNUAL_LEAVE:
-            await message.answer('Отмена', reply_markup=await b.get_document_list_button(holiday_type))
+            reply_markup = await b.get_document_list_button(holiday_type)
         else:
-            await message.answer('Отмена', reply_markup=await b.get_document_list_button(b_t.HOLIDAY))
+            reply_markup = await b.get_document_list_button(b_t.HOLIDAY)
+        await message.answer('Отмена', reply_markup=reply_markup)
         await state.finish()
         return
 

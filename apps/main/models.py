@@ -98,12 +98,16 @@ class Client(models.Model):
 
 
 class SickLeave(models.Model):
+    class SickLeaveEnum(models.TextChoices):
+        PREGNANCY = 'Больничный по беременности и родам', 'Больничный по беременности и родам'
+        SICK = 'Больничный по болезни', "Больничный по болезни"
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     date = models.CharField('Дата больничного', blank=True, default='')
     start_date = models.DateField('Дата начала', blank=True, null=True)
     end_date = models.DateField('Дата окончания', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
+    type_sick = models.CharField(verbose_name='Тип Больничный', choices=SickLeaveEnum.choices, blank=True, null=True)
 
     def __str__(self):
         return str(self.date)

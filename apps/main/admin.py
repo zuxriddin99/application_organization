@@ -61,8 +61,8 @@ class DocumentInlineAdmin(admin.TabularInline):
 class SickLeaveInlineAdmin(admin.TabularInline):
     model = SickLeave
     extra = 0
-    fields = ['start_date', 'end_date', 'created_at', ]
-    readonly_fields = ['start_date', 'end_date', 'created_at', ]
+    fields = ['type_sick', 'start_date', 'end_date', 'created_at', ]
+    readonly_fields = ['created_at', ]
 
 
 class HolidayInlineAdmin(admin.TabularInline):
