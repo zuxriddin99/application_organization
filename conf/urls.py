@@ -19,8 +19,12 @@ from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
 from apps.main.views import webhook
+from conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('webhook/', webhook, name='webhook'),
     path('', admin.site.urls),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
