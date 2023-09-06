@@ -62,6 +62,14 @@ async def back_to_category_list(message: types.Message):
 async def documents_list(message: types.Message, state: FSMContext):
     if not await check_permission_not_decorator(message):
         return
+    try:
+        doc: main_models.Document = await main_models.Document.objects.aget(name=message.text)
+        if doc.response_msg:
+            await message.answer(doc.response_msg)
+        if doc.file:
+            await bot.send_document(message.chat.id, read_file_from_django(doc.file))
+    except Exception:
+        pass
     if message.text == b_t.BEST_TEAMMATE:
         employer: main_models.Employer = await main_models.Employer.objects.afirst()
         await message.answer_photo(photo=read_file_from_django(employer.image), caption=employer.initials,
@@ -112,11 +120,11 @@ async def documents_list(message: types.Message, state: FSMContext):
 
     elif message.text in await get_documents_list(''):
         """ return selected document"""
-        doc: main_models.Document = await main_models.Document.objects.aget(name=message.text)
-        if doc.response_msg:
-            await message.answer(doc.response_msg)
-        if doc.file:
-            await bot.send_document(message.chat.id, read_file_from_django(doc.file))
+        # doc: main_models.Document = await main_models.Document.objects.aget(name=message.text)
+        # if doc.response_msg:
+        #     await message.answer(doc.response_msg)
+        # if doc.file:
+        #     await bot.send_document(message.chat.id, read_file_from_django(doc.file))
         if message.text in [b_t.SICK_LEAVE, b_t.PREGNANCY_LEAVE]:
             await message.answer("Отправьте дату начала больничный по болезни и дату окончания.\n"
                                  "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
