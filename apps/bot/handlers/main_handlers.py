@@ -8,7 +8,7 @@ from aiogram.types import CallbackQuery, ParseMode
 from apps.bot.config import bot
 from apps.bot.utils import get_all_categories_list, get_documents_list, return_document, read_file, check_permissions, \
     check_permission_not_decorator, get_client_new_holidays, get_client_old_holidays, get_all_categories_with_parent, \
-    generate_holiday_notification_for_admin
+    generate_holiday_notification_for_admin, split_text
 from apps.main import models as main_models
 from aiogram import types
 from django.core.exceptions import ValidationError
@@ -76,7 +76,7 @@ async def documents_list(message: types.Message, state: FSMContext):
                                    parse_mode=ParseMode.HTML)
     elif message.text == b_t.NUMBER_OF_UNUSED_HOLIDAYS:
         client = await main_models.Client.objects.aget(telegram_user_id=message.from_user.id)
-        if client.holiday_quantity:
+        if client.holiday_quantity not in ['', None]:
             await message.answer(
                 client.holiday_quantity,
             )
@@ -95,12 +95,14 @@ async def documents_list(message: types.Message, state: FSMContext):
         async for news in main_models.News.objects.all():
             have_news = True
             html_message = f'<b>{news.name}</b>\n{news.description}'
-            if news.image:
-                await message.answer_photo(photo=read_file_from_django(news.image),
-                                           caption=html_message,
-                                           parse_mode=ParseMode.HTML)
-            else:
-                await message.answer(text=html_message, parse_mode=ParseMode.HTML)
+            texts = await split_text(html_message)
+            for text in texts:
+                if news.image:
+                    await message.answer_photo(photo=read_file_from_django(news.image),
+                                               caption=text,
+                                               parse_mode=ParseMode.HTML)
+                else:
+                    await message.answer(text=text, parse_mode=ParseMode.HTML)
         if not have_news:
             await message.answer(text="no news", parse_mode=ParseMode.HTML)
 
@@ -112,7 +114,6 @@ async def documents_list(message: types.Message, state: FSMContext):
         await state.update_data(type_holiday=b_t.ANNUAL_LEAVE)
     elif message.text in await get_all_categories_with_parent():
         """ return documents selected category"""
-        print(message.text, '-------------------------')
         await message.answer(
             message.text,
             reply_markup=await b.get_document_list_button(message.text)
