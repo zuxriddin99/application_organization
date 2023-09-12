@@ -71,9 +71,9 @@ async def documents_list(message: types.Message, state: FSMContext):
     except Exception:
         pass
     if message.text == b_t.BEST_TEAMMATE:
-        employer: main_models.Employer = await main_models.Employer.objects.afirst()
-        await message.answer_photo(photo=read_file_from_django(employer.image), caption=employer.initials,
-                                   parse_mode=ParseMode.HTML)
+        async for employer in main_models.Employer.objects.all():
+            await message.answer_photo(photo=read_file_from_django(employer.image), caption=employer.initials,
+                                       parse_mode=ParseMode.HTML)
     elif message.text == b_t.NUMBER_OF_UNUSED_HOLIDAYS:
         client = await main_models.Client.objects.aget(telegram_user_id=message.from_user.id)
         if client.holiday_quantity not in ['', None]:
