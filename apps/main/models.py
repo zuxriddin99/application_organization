@@ -161,7 +161,7 @@ class SingletoneModel(models.Model):
         return obj
 
 
-class Employer(SingletoneModel):
+class Employer(models.Model):
     initials = models.CharField(max_length=255, verbose_name='ФИО')
     image = models.ImageField(upload_to='employer/', verbose_name='Изображение')
 
