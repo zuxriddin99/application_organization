@@ -108,6 +108,7 @@ class ClientAdmin(admin.ModelAdmin):
     save_as = True
     list_editable = ('is_approved', 'holiday_quantity')
     search_fields = ('full_name', 'telegram_user_name', 'telegram_user_id')
+    readonly_fields = ['telegram_user_id', 'telegram_user_name']
 
 
 @admin.register(News)

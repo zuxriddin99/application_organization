@@ -35,7 +35,6 @@ async def info_about_client(message: types.Message):
     client = await main_models.Client.objects.aget(telegram_user_id=message.from_user.id)
 
     data = f"ФИО по паспорту: {client.full_name_from_passport}\n" \
-           f"Тип паспорта: {client.typ_passport}\n" \
            f"Серия паспорта: {client.passport_seria}\n" \
            f"Дата приёма: {client.date_of_receipt}\n" \
            f"Должность: {client.job_title}\n" \
@@ -127,9 +126,14 @@ async def documents_list(message: types.Message, state: FSMContext):
         # if doc.file:
         #     await bot.send_document(message.chat.id, read_file_from_django(doc.file))
         if message.text in [b_t.SICK_LEAVE, b_t.PREGNANCY_LEAVE]:
-            await message.answer("Отправьте дату начала больничный по болезни и дату окончания.\n"
-                                 "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
-                                 "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
+            if message.text == b_t.SICK_LEAVE:
+                await message.answer("Отправьте дату начала больничный по болезни и дату окончания.\n"
+                                     "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
+                                     "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
+            else:
+                await message.answer("Отправьте дату начала больничного по беременности и родам и дату окончания.\n"
+                                     "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
+                                     "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
             await state.set_state(SickLeaveOrder.waiting_for_date.state)
             await state.update_data(type_leave=message.text)
 
@@ -147,10 +151,11 @@ async def handler_sick_leave_date(message: types.Message, state: FSMContext):
         await message.answer('Отмена', reply_markup=await b.get_document_list_button(b_t.SICK))
         await state.finish()
         return
+    type_leave = await state.get_data()
+    type_leave = type_leave['type_leave']
     try:
         client = await main_models.Client.objects.aget(telegram_user_id=message.from_user.id)
-        type_leave = await state.get_data()
-        type_leave = type_leave['type_leave']
+
         date_str = message.text.replace(' ', '').split('-')
         start_date, end_date = datetime.datetime.strptime(date_str[0], "%d/%m/%Y").date(), datetime.datetime.strptime(
             date_str[1], "%d/%m/%Y").date()
@@ -160,10 +165,16 @@ async def handler_sick_leave_date(message: types.Message, state: FSMContext):
                              reply_markup=await b.get_document_list_button(b_t.SICK))
         await state.finish()
     except ValueError:
-        await message.answer(
-            "Отправьте дату начала больничный по болезни и дату окончания.\n"
-            "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
-            "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
+        if type_leave == b_t.SICK_LEAVE:
+            await message.answer(
+                "Отправьте дату начала больничный по болезни и дату окончания.\n"
+                "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
+                "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
+        else:
+            await message.answer(
+                "Отправьте дату начала больничного по беременности и родам и дату окончания.\n"
+                "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
+                "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
         await state.set_state(SickLeaveOrder.waiting_for_date.state)
 
 
@@ -181,7 +192,6 @@ async def handler_holiday_date(message: types.Message, state: FSMContext):
         return
 
     try:
-        client = await main_models.Client.objects.aget(telegram_user_id=message.from_user.id)
         holiday_name = await state.get_data()
         holiday_name = holiday_name['type_holiday']
         date_str = message.text.replace(' ', '').split('-')

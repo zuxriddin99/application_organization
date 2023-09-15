@@ -81,8 +81,6 @@ class Client(models.Model):
     holiday_quantity = models.IntegerField(blank=True, null=True, verbose_name='Количество выходных')
     is_approved = models.BooleanField(default=False, verbose_name='Одобренный')
     full_name_from_passport = models.CharField('ФИО по паспорту', max_length=250, blank=True, default='')
-    typ_passport = models.CharField('Тип паспорта', max_length=10, choices=PassportTypeEnum.choices, blank=True,
-                                    null=True)
     passport_seria = models.CharField('Серия паспорта', max_length=250, blank=True, default='')
     date_of_receipt = models.DateField('Дата приёма', blank=True, null=True)
     job_title = models.CharField('Должность', max_length=250, blank=True, default='')
