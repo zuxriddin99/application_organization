@@ -146,15 +146,15 @@ async def split_text(long_text, siz=4000) -> []:
 
 async def send_message_to_users(clients_id_list: List, news: main_models.News):
     html_message = f'<b>{news.name}</b>\n{news.description}'
-    texts = await split_text(html_message, 1000)
-    for text in texts:
-        if news.image:
-            file = await read_file(news.image.path)
-            for client_id in clients_id_list:
-                await bot.send_photo(chat_id=client_id, photo=file, caption=text, parse_mode=ParseMode.HTML)
-        else:
-            for client_id in clients_id_list:
-                await bot.send_message(chat_id=client_id, text=text, parse_mode=ParseMode.HTML)
+    # texts = await split_text(html_message, 1000)
+    # for text in texts:
+    if news.image:
+        file = await read_file(news.image.path)
+        for client_id in clients_id_list:
+            await bot.send_photo(chat_id=client_id, photo=file, caption=html_message, parse_mode=ParseMode.HTML)
+    else:
+        for client_id in clients_id_list:
+            await bot.send_message(chat_id=client_id, text=html_message, parse_mode=ParseMode.HTML)
 
 
 async def read_file(filename):

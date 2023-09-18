@@ -111,9 +111,21 @@ class ClientAdmin(admin.ModelAdmin):
     readonly_fields = ['telegram_user_id', 'telegram_user_name']
 
 
+class NewsAdminForm(forms.ModelForm):
+    class Meta:
+        model = News
+        fields = '__all__'
+
+    def clean(self):
+        text = self.cleaned_data.get('description') + self.cleaned_data.get('name')
+        if len(text) > 1020:
+            raise forms.ValidationError({'description': "Название и описание не могут содержать 1020 символов."})
+
+
 @admin.register(News)
 class NewsAdmin(admin.ModelAdmin):
     list_display = ['name', 'created_at']
+    form = NewsAdminForm
 
 
 admin.site.register(Employer)
