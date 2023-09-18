@@ -130,7 +130,7 @@ async def split_text(long_text) -> []:
     chunks = []
     current_chunk = ""
     for word in words:
-        if len(current_chunk) + len(word) + 1 <= 4096:  # Check if adding the word exceeds the limit
+        if len(current_chunk) + len(word) + 1 <= 3000:  # Check if adding the word exceeds the limit
             if current_chunk:
                 current_chunk += " "  # Add a space between words
             current_chunk += word
