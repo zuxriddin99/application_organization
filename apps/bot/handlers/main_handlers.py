@@ -94,13 +94,17 @@ async def documents_list(message: types.Message, state: FSMContext):
         async for news in main_models.News.objects.all():
             have_news = True
             html_message = f'<b>{news.name}</b>\n{news.description}'
-            texts = await split_text(html_message)
+            texts = await split_text(html_message, 1000)
+            print(len(texts))
             for text in texts:
-                if news.image:
-                    await message.answer_photo(photo=read_file_from_django(news.image),
-                                               caption=text,
-                                               parse_mode=ParseMode.HTML)
-                else:
+                try:
+                    if news.image:
+                        await message.answer_photo(photo=read_file_from_django(news.image),
+                                                   caption=text,
+                                                   parse_mode=ParseMode.HTML)
+                    else:
+                        await message.answer(text=text, parse_mode=ParseMode.HTML)
+                except:
                     await message.answer(text=text, parse_mode=ParseMode.HTML)
         if not have_news:
             await message.answer(text="no news", parse_mode=ParseMode.HTML)

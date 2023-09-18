@@ -124,13 +124,13 @@ def return_document(name: str) -> main_models.Document:
     return document
 
 
-async def split_text(long_text) -> []:
+async def split_text(long_text, siz=4000) -> []:
     # Split the long text into chunks at spaces
     words = long_text.split()
     chunks = []
     current_chunk = ""
     for word in words:
-        if len(current_chunk) + len(word) + 1 <= 3000:  # Check if adding the word exceeds the limit
+        if len(current_chunk) + len(word) + 1 <= siz:  # Check if adding the word exceeds the limit
             if current_chunk:
                 current_chunk += " "  # Add a space between words
             current_chunk += word
@@ -146,7 +146,7 @@ async def split_text(long_text) -> []:
 
 async def send_message_to_users(clients_id_list: List, news: main_models.News):
     html_message = f'<b>{news.name}</b>\n{news.description}'
-    texts = await split_text(html_message)
+    texts = await split_text(html_message, 1000)
     for text in texts:
         if news.image:
             file = await read_file(news.image.path)
