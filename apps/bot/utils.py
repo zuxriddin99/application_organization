@@ -176,7 +176,7 @@ def check_permissions():
                 if client.is_approved:
                     await handler(message)
                 else:
-                    await message.answer('Админстратор ещё не одобрил ваше заявку.', reply_markup=None)
+                    await message.answer('Админстратор ещё не одобрил вашу заявку.', reply_markup=None)
             except main_models.Client.DoesNotExist:
                 await message.reply("Нажмите /start",
                                     reply_markup=empty_list)
@@ -193,7 +193,7 @@ async def check_permission_not_decorator(message: types.Message):
         if client.is_approved:
             return True
         else:
-            await message.answer('Админстратор ещё не одобрил ваше заявку.', reply_markup=None)
+            await message.answer('Админстратор ещё не одобрил вашу заявку.', reply_markup=None)
             return False
 
     except main_models.Client.DoesNotExist:

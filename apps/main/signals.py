@@ -51,7 +51,7 @@ def client_signal_receiver(sender, instance: Client, **kwargs):
         if instance.is_approved != old_instance.is_approved:
             if instance.is_approved:
                 asyncio.run(send_message(instance.telegram_user_id,
-                                         "Администратор одобрил ваш запрос, вы можете пользоваться услугами бота.",
+                                         "Пользоваться возможностями бота можно после одобрения администратора",
                                          b.get_categories_list_button_sync()))
             else:
                 asyncio.run(send_message(instance.telegram_user_id,

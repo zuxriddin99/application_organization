@@ -113,7 +113,7 @@ async def documents_list(message: types.Message, state: FSMContext):
     elif message.text in [b_t.TAKE_ANNUAL_LEAVE]:
         await message.answer("Отправьте дату начала отпуска и дату окончания.\n"
                              "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
-                             "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
+                             "Пример: 20/08/2023 - 02/09/2023", reply_markup=await b.get_cancel_button())
         await state.set_state(HolidayOrder.waiting_for_date.state)
         await state.update_data(type_holiday=b_t.ANNUAL_LEAVE)
     elif message.text in await get_all_categories_with_parent():
@@ -134,18 +134,18 @@ async def documents_list(message: types.Message, state: FSMContext):
             if message.text == b_t.SICK_LEAVE:
                 await message.answer("Отправьте дату начала больничный по болезни и дату окончания.\n"
                                      "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
-                                     "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
+                                     "Пример: 20/08/2023 - 05/09/2023", reply_markup=await b.get_cancel_button())
             else:
                 await message.answer("Отправьте дату начала больничного по беременности и родам и дату окончания.\n"
                                      "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
-                                     "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
+                                     "Пример: 20/08/2023 - 05/09/2023", reply_markup=await b.get_cancel_button())
             await state.set_state(SickLeaveOrder.waiting_for_date.state)
             await state.update_data(type_leave=message.text)
 
         elif message.text in [b_t.LEAVE_WITHOUT_PAY, b_t.HOLIDAY_CARE_FOR_CHILD]:
             await message.answer("Отправьте дату начала отпуска и дату окончания.\n"
                                  "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
-                                 "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
+                                 "Пример: 20/08/2023 - 05/09/2023", reply_markup=await b.get_cancel_button())
             await state.set_state(HolidayOrder.waiting_for_date.state)
             await state.update_data(type_holiday=message.text)
 
@@ -174,12 +174,12 @@ async def handler_sick_leave_date(message: types.Message, state: FSMContext):
             await message.answer(
                 "Отправьте дату начала больничный по болезни и дату окончания.\n"
                 "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
-                "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
+                "Пример: 20/08/2023 - 05/09/2023", reply_markup=await b.get_cancel_button())
         else:
             await message.answer(
                 "Отправьте дату начала больничного по беременности и родам и дату окончания.\n"
                 "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
-                "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
+                "Пример: 20/08/2023 - 06/09/2023", reply_markup=await b.get_cancel_button())
         await state.set_state(SickLeaveOrder.waiting_for_date.state)
 
 
@@ -224,7 +224,7 @@ async def handler_holiday_date(message: types.Message, state: FSMContext):
     except Exception as error:
         await message.answer("Отправьте дату начала отпуска и дату окончания.\n"
                              "Отправить дату в этом формате(день/месяц/год - день/месяц/год).\n"
-                             "Пример: 20/8/2023 - 20/9/2023", reply_markup=await b.get_cancel_button())
+                             "Пример: 20/08/2023 - 09/09/2023", reply_markup=await b.get_cancel_button())
         await state.set_state(HolidayOrder.waiting_for_date.state)
 
 

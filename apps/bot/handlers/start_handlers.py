@@ -67,7 +67,7 @@ async def handler_full_name(message: types.Message, state: FSMContext):
     #     f'{full_name}, Чем я могу вам помочь?', reply_markup=await b.get_categories_list_button()
     # )
     await message.answer(
-        "Администрация одобряет вас, после чего вы можете использовать бота"
+        "Пользоваться возможностями бота можно после одобрения администратора"
     )
     await state.finish()
 
