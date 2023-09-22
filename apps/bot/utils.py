@@ -215,6 +215,12 @@ async def send_notification_to_admin(text: str):
         await send_message(user_id, text, None)
 
 
+async def send_notification_to_admin_with_files(file, caption):
+    admins_telegram_ids = await get_admins_list()
+    for user_id in admins_telegram_ids:
+        await bot.send_document(user_id, file, caption=caption)
+
+
 async def generate_holiday_notification_for_admin(holiday: main_models.Holiday):
     url = f"{DOMAIN}main/client/{holiday.client.id}/change/#%D0%BE%D1%82%D0%BF%D1%83%D1%81%D0%BA-tab"
     text = f"Уведомление\n" \
